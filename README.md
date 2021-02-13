@@ -15,8 +15,8 @@ This can be simply understood as my summarization of techniques and methods both
 
 Concepts:
 - [x] Deep Learning in general
-- [x] Activation function
-- [x] Hyperparameter tuning
+- [x] Activation functions
+- [x] Hyperparameters tuning
 - [x] Image recognition
 - [ ] NLP
 
