@@ -2,3 +2,5 @@
 */logs
 /.ipynb_checkpoints
 /random_search
+/.vscode
+/PyTorch/data
