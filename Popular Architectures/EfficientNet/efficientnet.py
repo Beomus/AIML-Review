@@ -71,6 +71,7 @@ class SqueezeExcitation(nn.Module):
             nn.Conv2d(in_channels, reduced_dim, kernel_size=1),
             nn.SiLU(),
             nn.Conv2d(reduced_dim, in_channels, kernel_size=1),
+            nn.Sigmoid(),
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -124,21 +125,15 @@ class InvertedResidualBlock(nn.Module):
         return out
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
-        if self.expand:
-            # expanding the inputs if self.expand
-            x = self.expand_conv(inputs)
-
-        x = inputs
+        x = self.expand_conv(inputs) if self.expand else inputs
 
         if self.use_residual:
             # adding residual with stochastic depth if using residual
-            residual = inputs
             x = self.conv(x)
-            x = self.stochastic_depth(x) + residual
+            x = self.stochastic_depth(x) + inputs
             return x
-
-        x = self.conv(x)
-        return x
+        else:
+            return self.conv(x)
 
 
 class EfficientNet(nn.Module):
@@ -177,8 +172,8 @@ class EfficientNet(nn.Module):
                         expand_ratio=expand_ratio,
                         stride=stride if layer == 0 else 1,
                         kernel_size=kernel_size,
-                        padding=kernel_size
-                        // 2,  # if k=1:pad=0, if k=3:pad=1, if k=5:pad=2
+                        padding=kernel_size // 2,
+                        # if k=1:pad=0, if k=3:pad=1, if k=5:pad=2
                     )
                 )
                 in_channels = out_channels
@@ -192,18 +187,19 @@ class EfficientNet(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         x = self.features(x)
         x = self.pool(x)
-        x = x.view(x.shape[0], -1)  # flatten
-        x = self.classifier(x)
+        x = self.classifier(x.view(x.shape[0], -1))
         return x
 
 
 def test():
     version = "b0"
     phi, res, drop_rate = phi_values[version]
-    num_examples, num_classes = 4, 10
+    num_examples, num_classes = 1, 10
     x = torch.randn((num_examples, 3, res, res))
     model = EfficientNet(version=version, num_classes=num_classes)
-    print(model(x).shape)  # (num_examples, num_classes)
+    y = model(x)
+    print(y.shape)  # (num_examples, num_classes)
+    print(y)
 
 
 if __name__ == "__main__":
