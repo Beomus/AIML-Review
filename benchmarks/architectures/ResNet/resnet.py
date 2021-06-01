@@ -103,14 +103,15 @@ class ResNet(nn.Module):
         self,
         block: Type[Union[BasicBlock, Bottleneck]],
         layers: List[int],
-        image_channels: int,
+        in_channels: int,
         num_classes: int,
     ) -> None:
         super().__init__()
+        self.name = "ResNet"
         self.in_channels = 64
         out_channels = [64, 128, 256, 512]
         self.conv1 = nn.Conv2d(
-            image_channels,
+            in_channels,
             self.in_channels,
             kernel_size=7,
             stride=2,
@@ -185,24 +186,24 @@ class ResNet(nn.Module):
         return nn.Sequential(*layers)
 
 
-def ResNet18(img_channels=3, num_classes=1000):
-    return ResNet(BasicBlock, [2, 2, 2, 2], img_channels, num_classes)
+def ResNet18(in_channels=3, num_classes=1000):
+    return ResNet(BasicBlock, [2, 2, 2, 2], in_channels, num_classes)
 
 
-def ResNet34(img_channels=3, num_classes=1000):
-    return ResNet(BasicBlock, [3, 4, 6, 3], img_channels, num_classes)
+def ResNet34(in_channels=3, num_classes=1000):
+    return ResNet(BasicBlock, [3, 4, 6, 3], in_channels, num_classes)
 
 
-def ResNet50(img_channels=3, num_classes=1000):
-    return ResNet(Bottleneck, [3, 4, 6, 3], img_channels, num_classes)
+def ResNet50(in_channels=3, num_classes=1000):
+    return ResNet(Bottleneck, [3, 4, 6, 3], in_channels, num_classes)
 
 
-def ResNet101(img_channels=3, num_classes=1000):
-    return ResNet(Bottleneck, [3, 4, 23, 3], img_channels, num_classes)
+def ResNet101(in_channels=3, num_classes=1000):
+    return ResNet(Bottleneck, [3, 4, 23, 3], in_channels, num_classes)
 
 
-def ResNet152(img_channels=3, num_classes=1000):
-    return ResNet(Bottleneck, [3, 8, 36, 3], img_channels, num_classes)
+def ResNet152(in_channels=3, num_classes=1000):
+    return ResNet(Bottleneck, [3, 8, 36, 3], in_channels, num_classes)
 
 
 def test():

@@ -136,7 +136,7 @@ class ViT(nn.Module):
         depth,
         heads,
         mlp_dim,
-        channels=3,
+        in_channels=3,
         dropout=0.1,
         emb_dropout=0.1,
     ):
@@ -145,8 +145,8 @@ class ViT(nn.Module):
             image_size % patch_size == 0
         ), f"Image dimensions ({image_size}) must be divisible by patch size ({patch_size})"
         num_patches = (image_size // patch_size) ** 2
-        patch_dim = channels * patch_size ** 2
-
+        patch_dim = in_channels * patch_size ** 2
+        self.name = "ViT"
         self.patch_size = patch_size
         self.pos_embedding = nn.Parameter(torch.empty(1, (num_patches + 1), dim))
         torch.nn.init.normal_(
@@ -298,7 +298,7 @@ def main():
         image_size=32,
         patch_size=8,
         num_classes=100,
-        channels=1,
+        in_channels=1,
         dim=1024,
         depth=6,
         heads=16,

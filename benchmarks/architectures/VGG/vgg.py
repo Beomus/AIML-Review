@@ -57,6 +57,7 @@ class VGG_Net(nn.Module):
     def __init__(self, arch: List, in_channels: int = 1, num_classes: int = 10) -> None:
         super().__init__()
         self.in_channels = in_channels
+        self.name = "VGG"
         self.conv_layers = self.build_conv(arch)
         self.fc = nn.Sequential(
             nn.Linear(512 * 7 * 7, 4096),  # 224 -> 5 maxpool = 224/(2**5) = 7

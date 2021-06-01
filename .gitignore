@@ -4,3 +4,5 @@
 /random_search
 /.vscode
 /PyTorch/data
+__pycache__
+data
