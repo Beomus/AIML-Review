@@ -101,6 +101,7 @@ def main():
         ),
     ]
 
+    # Training initialization
     transform_train = transforms.Compose(
         [
             transforms.RandomHorizontalFlip(),
@@ -114,7 +115,7 @@ def main():
     transform_test = transforms.Compose([transforms.ToTensor()])
 
     data = CIFAR10Data(
-        transform_train=transform_train, transform_test=transform_test, batch_size=32
+        transform_train=transform_train, transform_test=transform_test, batch_size=128
     )
     train_loader, val_loader, test_loader = data.initialize_dataset()
 
