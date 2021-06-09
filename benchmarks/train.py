@@ -1,10 +1,9 @@
-import PIL
+import csv
+from os import write
 import torch
 from torch.nn import functional as F
 from torchvision import transforms
-from tqdm import tqdm
 import time
-import pandas as pd
 
 from dataset import CIFAR10Data
 from architectures import VGG_Net, VGG_types, ResNet50, ViT, EfficientNet
@@ -73,7 +72,7 @@ def evaluate(model, data_loader, loss_history, device):
 
 
 def main():
-    N_EPOCHS = 10
+    N_EPOCHS = 50
     IN_CHANNELS = 3
     NUM_CLASSES = 10
     LR = 0.01
@@ -119,10 +118,9 @@ def main():
     )
     train_loader, val_loader, test_loader = data.initialize_dataset()
 
+    # Training
     for model in models:
         print(f"Model: {model.name}")
-
-        CHECKPOINT = f"{model.name}_checkpoint.pth"
 
         optimizer = torch.optim.Adam(model.parameters(), lr=LR)
         train_loss_history, test_loss_history = [], []
@@ -135,7 +133,8 @@ def main():
         }
 
         start_time = time.time()
-        for epoch in tqdm(range(1, N_EPOCHS + 1)):
+
+        for epoch in range(1, N_EPOCHS + 1):
             print(f"Epoch {epoch:3}/{N_EPOCHS}")
             train(model, optimizer, train_loader, train_loss_history, device)
             evaluate(model, test_loader, test_loss_history, device)
@@ -150,9 +149,15 @@ def main():
                 "time": total_time,
             }
         )
-        dataframe = pd.DataFrame(logs)
-        dataframe.to_csv(f"{model.name}_log.csv")
 
+        # logging
+        with open(f"benchmarks/logs/{model.name}_log.csv", "w") as file:
+            writer = csv.writer(file)
+            for k, v in logs.items():
+                writer.writerow([k, v])
+
+        # saving
+        CHECKPOINT = f"benchmarks/checkpoints/{model.name}_{LR}_{N_EPOCHS}.pth"
         torch.save(model.state_dict(), CHECKPOINT)
 
 

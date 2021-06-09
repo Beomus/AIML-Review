@@ -6,3 +6,4 @@
 /PyTorch/data
 __pycache__
 data
+checkpoints
