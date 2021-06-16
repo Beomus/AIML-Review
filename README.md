@@ -18,6 +18,7 @@ Concepts:
 - [x] Activation functions
 - [x] Hyperparameters tuning
 - [x] Image recognition
+- [x] Image segmentation
 - [ ] NLP
 
 
@@ -25,5 +26,14 @@ Frameworks:
 - [x] PyTorch
 - [x] TensorFlow
 - [ ] FastAI
+
+
+## Usage
+
+`conda env create -f environment.yml`
+
+`conda activate pyto`
+
+*Note*: TensorFlow installation is not included please check carefully on how to install TensorFlow that is compatible with your machine.
 
 Please feel free to post any issues or PR as needed, I will try to review them as much as I can. Thanks!
