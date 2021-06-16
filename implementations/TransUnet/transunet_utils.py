@@ -66,22 +66,13 @@ class ResNetV2(nn.Module):
         width = int(64 * width_factor)
         self.width = width
 
-        self.root = nn.Sequential(
-            OrderedDict(
-                [
-                    (
-                        "conv",
-                        StdConv2d(
-                            3, width, kernel_size=7, stride=2, bias=False, padding=3
-                        ),
-                    ),
-                    ("gn", nn.GroupNorm(32, width, eps=1e-6)),
-                    ("relu", nn.ReLU(inplace=True)),
-                ]
-            )
-        )
-
         # fmt: off
+        self.root = nn.Sequential(OrderedDict([
+            ('conv', StdConv2d(3, width, kernel_size=7, stride=2, bias=False, padding=3)),
+            ('gn', nn.GroupNorm(32, width, eps=1e-6)),
+            ('relu', nn.ReLU(inplace=True)),
+        ]))
+
         self.body = nn.Sequential(OrderedDict([
             ('block1', nn.Sequential(OrderedDict(
                 [('unit1', PreActBottleneck(cin=width, cout=width*4, cmid=width))] +
