@@ -202,7 +202,7 @@ def get_l16_config():
 
 
 def get_r50_l16_config():
-    """Returns the Resnet50 + ViT-L/16 configuration. customized """
+    """Returns the Resnet50 + ViT-L/16 configuration. customized"""
     config = get_l16_config()
     config.patches.grid = (16, 16)
     config.resnet = ml_collections.ConfigDict()
