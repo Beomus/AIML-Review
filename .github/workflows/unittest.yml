@@ -20,7 +20,7 @@ jobs:
         echo $CONDA/bin >> $GITHUB_PATH
     - name: Install dependencies
       run: |
-        conda env update --file environment.yml --name base
+        conda install pytorch torchvision torchaudio cpuonly -c pytorch ml_collection einops
     - name: Run unittest
       run: |
         python -m unittest discover -p "*_test.py"
