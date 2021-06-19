@@ -195,9 +195,11 @@ class EfficientNet(nn.Module):
 def test():
     version = "b0"
     phi, res, drop_rate = phi_values[version]
-    num_examples, num_classes = 1, 10
-    x = torch.randn((num_examples, 3, res, res))
-    model = EfficientNet(version=version, num_classes=num_classes)
+    num_examples, num_classes, in_channels = 1, 10, 3
+    x = torch.randn((num_examples, in_channels, res, res))
+    model = EfficientNet(
+        version=version, in_channels=in_channels, num_classes=num_classes
+    )
     y = model(x)
     print(y.shape)  # (num_examples, num_classes)
     print(y)

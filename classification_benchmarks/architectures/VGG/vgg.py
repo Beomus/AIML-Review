@@ -60,7 +60,7 @@ class VGG_Net(nn.Module):
         self.name = "VGG"
         self.conv_layers = self.build_conv(arch)
         self.fc = nn.Sequential(
-            nn.Linear(512 * 1 * 1, 4096),  # 224 -> 5 maxpool = 224/(2**5) = 7
+            nn.Linear(512 * 7 * 7, 4096),  # 224 -> 5 maxpool = 224/(2**5) = 7
             nn.ReLU(),
             nn.Dropout(p=0.2),
             nn.Linear(4096, 4096),
