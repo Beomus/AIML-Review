@@ -32,8 +32,16 @@ Frameworks:
 
 `conda env create -f environment.yml`
 
-`conda activate pyto`
+`conda activate aiml`
 
-*Note*: TensorFlow installation is not included please check carefully on how to install TensorFlow that is compatible with your machine.
+### *Note*: 
+- TensorFlow installation is not included please check carefully on how to install TensorFlow that is compatible with your machine.
+- In case environment does not work because of OS differences, trying installing dependencies with pip:
+
+`conda create --name aiml python=3.8`
+
+`conda activate aiml`
+
+`pip install -r requirements.txt`
 
 Please feel free to post any issues or PR as needed, I will try to review them as much as I can. Thanks!
