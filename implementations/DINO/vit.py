@@ -95,7 +95,7 @@ class Attention(nn.Module):
         attn = attn.softmax(dim=-1)
         attn = self.attn_drop(attn)
 
-        x = (attn @ v).tranpose(1, 2).reshape(B, N, C)
+        x = (attn @ v).transpose(1, 2).reshape(B, N, C)
         x = self.proj(x)
         x = self.proj_drop(x)
         return x, attn
@@ -395,7 +395,7 @@ class MlpHead(nn.Module):
                 layers.append(nn.Linear(hidden_dim, hidden_dim))
                 layers.append(nn.GELU())
             layers.append(nn.Linear(hidden_dim, bottleneck_dim))
-            self.mlp == nn.Sequential(*layers)
+            self.mlp = nn.Sequential(*layers)
 
         self.apply(self._init_weights)
 

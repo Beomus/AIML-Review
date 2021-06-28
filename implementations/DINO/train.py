@@ -47,7 +47,8 @@ def main():
 
     logging_path = pathlib.Path(args.tensorboard_dir)
     device = torch.device(args.device)
-
+    if device == "cuda":
+        torch.cuda.empty_cache()
     n_workers = 4
 
     ##################
@@ -114,16 +115,14 @@ def main():
 
     student = MultiCropWrapper(
         student_vit,
-        MlpHead(
-            in_dim=dim, out_dim=args.out_dim, norm_last_layer=args.norm_last_layerm
-        ),
+        MlpHead(in_dim=dim, out_dim=args.out_dim, norm_last_layer=args.norm_last_layer),
     )
     teacher = MultiCropWrapper(teacher_vit, MlpHead(dim, args.out_dim))
     student, teacher = student.to(device), teacher.to(device)
 
     teacher.load_state_dict(student.state_dict())
 
-    for p in teacher.parameters:
+    for p in teacher.parameters():
         p.requires_grad = False
 
     ######
@@ -132,7 +131,7 @@ def main():
     loss_inst = Loss(
         out_dim=args.out_dim,
         teacher_temp=args.teacher_temp,
-        student_temp=args.stduent_temp,
+        student_temp=args.student_temp,
     ).to(device)
     lr = 0.0005 * args.batch_size / 256
     optimizer = torch.optim.Adam(
@@ -162,7 +161,7 @@ def main():
                     metadata=[label_mapping[l] for l in labels_],
                     label_img=imgs,
                     global_step=n_steps,
-                    tags="embeddings",
+                    tag="embeddings",
                 )
 
                 # KNN

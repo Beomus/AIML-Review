@@ -84,7 +84,7 @@ def compute_embedding(backbone, dataloader):
     for img, y in dataloader:
         img = img.to(device)
         embs_l.append(backbone(img).detach().cpu())
-        imgs_l.extend(((img * 0.224) + 0.45).cpu())  # undo normalization
+        imgs_l.append(((img * 0.224) + 0.45).cpu())  # undo normalization
         labels.extend([dataloader.dataset.classes[i] for i in y.tolist()])
 
     embs = torch.cat(embs_l, dim=0)

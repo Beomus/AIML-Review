@@ -73,7 +73,7 @@ class DataAugmentation:
                 transforms.RandomResizedCrop(
                     size=size,
                     scale=global_crops_scale,
-                    interpolation=Image.BICUBIC,
+                    interpolation=transforms.InterpolationMode.BICUBIC,
                 ),
                 flip_and_jitter,
                 RandomGaussianBlur(1.0),
@@ -86,7 +86,7 @@ class DataAugmentation:
                 transforms.RandomResizedCrop(
                     size=size,
                     scale=global_crops_scale,
-                    interpolation=Image.BICUBIC,
+                    interpolation=transforms.InterpolationMode.BICUBIC,
                 ),
                 flip_and_jitter,
                 RandomGaussianBlur(0.1),
@@ -100,7 +100,7 @@ class DataAugmentation:
                 transforms.RandomResizedCrop(
                     size=size,
                     scale=local_crops_scale,
-                    interpolation=Image.BICUBIC,
+                    interpolation=transforms.InterpolationMode.BICUBIC,
                 ),
                 flip_and_jitter,
                 RandomGaussianBlur(0.5),
