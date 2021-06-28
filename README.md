@@ -11,9 +11,11 @@ This can be simply understood as my summarization of techniques and methods both
 > **I will finalized the repo structure onced I have gone over my notes**
 
 ## Additional info
+
 > _Notes: items being crossed off means that they are included but might not completely cover the subject matter._
 
 Concepts:
+
 - [x] Deep Learning in general
 - [x] Activation functions
 - [x] Hyperparameters tuning
@@ -21,12 +23,11 @@ Concepts:
 - [x] Image segmentation
 - [ ] NLP
 
-
 Frameworks:
+
 - [x] PyTorch
 - [x] TensorFlow
 - [ ] FastAI
-
 
 ## Usage
 
@@ -34,7 +35,8 @@ Frameworks:
 
 `conda activate aiml`
 
-### *Note*: 
+### *Note*
+
 - TensorFlow installation is not included please check carefully on how to install TensorFlow that is compatible with your machine.
 - In case environment does not work because of OS differences, trying installing dependencies with pip:
 
