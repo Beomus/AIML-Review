@@ -1,5 +1,9 @@
 # Overview of AIML I have learned
 
+![lint](https://github.com/Beomus/py-dsa/actions/workflows/black.yml/badge.svg)
+![unittest](https://github.com/Beomus/py-dsa/actions/workflows/unittest.yml/badge.svg)
+[![CircleCI](https://circleci.com/gh/Beomus/AIML-Review.svg?style=shield)](https://github.com/Beomus/AIML-Review/)
+
 Review notes can be found [here](https://docs.google.com/document/d/1ocJ-YzZ6IvvCjJWNqE98Q6tpFOXDguBGV7xBZhqHlss/edit?usp=sharing) (please feel free to leave any comments and suggestion and correction).
 
 ---
