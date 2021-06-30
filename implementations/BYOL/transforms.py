@@ -9,21 +9,27 @@ class GaussianBlur:
         radius = kernel_size // 2
         kernel_size = radius * 2 + 1
         self.blur_h = nn.Conv2d(
-            in_channels=3, out_channels=3, kernel_size=(kernel_size, 1),
-            stride=1, padding=0, bias=False, groups=3
+            in_channels=3,
+            out_channels=3,
+            kernel_size=(kernel_size, 1),
+            stride=1,
+            padding=0,
+            bias=False,
+            groups=3,
         )
         self.blur_v = nn.Conv2d(
-            in_channels=3, out_channels=3, kernel_size=(kernel_size, 1),
-            stride=1, padding=0, bias=False, groups=3
+            in_channels=3,
+            out_channels=3,
+            kernel_size=(kernel_size, 1),
+            stride=1,
+            padding=0,
+            bias=False,
+            groups=3,
         )
         self.k = kernel_size
         self.r = radius
 
-        self.blur = nn.Sequential(
-            nn.ReflectionPad1d(radius),
-            self.blur_h,
-            self.blur_v
-        )
+        self.blur = nn.Sequential(nn.ReflectionPad1d(radius), self.blur_h, self.blur_v)
 
         self.pil_to_tensor = transforms.ToTensor()
         self.tensor_to_pil = transforms.ToPILImage()
@@ -62,14 +68,16 @@ class MultiViewDataInjector:
 
 
 def get_simclr_data_transforms(input_shape, s=1):
-    color_jitter = transforms.ColorJitter(0.8 * s, 0.8 * s, 0.8 * s, 0.2 *s)
-    data_transforms = transforms.Compose([
-        transforms.RandomResizedCrop(size=eval(input_shape)[0]),
-        transforms.RandomHorizontalFlip(),
-        transforms.RandomApply([color_jitter], p=0.8),
-        transforms.RandomGrayscale(p=0.2),
-        GaussianBlur(kernel_size=int(0.1 * eval(input_shape)[0])),
-        transforms.ToTensor()
-    ])
+    color_jitter = transforms.ColorJitter(0.8 * s, 0.8 * s, 0.8 * s, 0.2 * s)
+    data_transforms = transforms.Compose(
+        [
+            transforms.RandomResizedCrop(size=eval(input_shape)[0]),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomApply([color_jitter], p=0.8),
+            transforms.RandomGrayscale(p=0.2),
+            GaussianBlur(kernel_size=int(0.1 * eval(input_shape)[0])),
+            transforms.ToTensor(),
+        ]
+    )
 
     return data_transforms
