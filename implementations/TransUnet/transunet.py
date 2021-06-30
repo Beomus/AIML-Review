@@ -225,7 +225,11 @@ class Conv2dReLU(nn.Sequential):
 
 class DecoderBlock(nn.Module):
     def __init__(
-        self, in_channels, out_channels, skip_channels=0, use_batchnorm=True,
+        self,
+        in_channels,
+        out_channels,
+        skip_channels=0,
+        use_batchnorm=True,
     ):
         super().__init__()
         self.conv1 = Conv2dReLU(

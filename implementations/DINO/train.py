@@ -16,7 +16,8 @@ from vit import VisionTransformer, MlpHead, DINOHead
 
 def main():
     parser = argparse.ArgumentParser(
-        "DINO training CLI", formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        "DINO training CLI",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("-b", "--batch-size", type=int, default=32)
     parser.add_argument(

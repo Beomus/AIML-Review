@@ -40,7 +40,8 @@ class DataAugmentation:
 
         def RandomGaussianBlur(p):
             return transforms.RandomApply(
-                [transforms.GaussianBlur(kernel_size=5, sigma=(0.1, 2))], p=p,
+                [transforms.GaussianBlur(kernel_size=5, sigma=(0.1, 2))],
+                p=p,
             )
 
         flip_and_jitter = transforms.Compose(
@@ -49,7 +50,10 @@ class DataAugmentation:
                 transforms.RandomApply(
                     [
                         transforms.ColorJitter(
-                            brightness=0.4, contrast=0.4, saturation=0.2, hue=0.1,
+                            brightness=0.4,
+                            contrast=0.4,
+                            saturation=0.2,
+                            hue=0.1,
                         )
                     ]
                 ),
