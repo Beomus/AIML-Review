@@ -5,9 +5,9 @@ from torch.utils import data
 from torchvision import datasets
 import yaml
 
-from .data.transforms import MultiViewDataInjector, get_simclr_data_transforms
-from .model.model import MlpHead, ResNet
-from .trainer import BYOLTrainer
+from transforms import MultiViewDataInjector, get_simclr_data_transforms
+from model.model import MlpHead, ResNet
+from trainer import BYOLTrainer
 
 print(torch.__version__)
 torch.manual_seed(0)
