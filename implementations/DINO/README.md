@@ -8,7 +8,7 @@ Instructions:
 mkdir data
 cd data
 curl -s https://s3.amazonaws.com/fast-ai-imageclas/imagenette2-320.tgz -o imagenette2-320.tgz
-tar -xvzf imagenette-320.tgz
+tar -xvzf imagenette2-320.tgz
 ```
 
 Labels for imagenette
