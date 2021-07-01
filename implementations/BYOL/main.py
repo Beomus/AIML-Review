@@ -23,7 +23,7 @@ def main():
         "./data/",
         split="train+unlabeled",
         download=True,
-        transform=MultiViewDataInjector([data_transforms]),
+        transform=MultiViewDataInjector([data_transforms, data_transforms]),
     )
 
     # online network
