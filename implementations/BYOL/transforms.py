@@ -29,11 +29,7 @@ class GaussianBlur:
         self.k = kernel_size
         self.r = radius
 
-        self.blur = nn.Sequential(
-            nn.ReflectionPad2d(radius),
-            self.blur_h,
-            self.blur_v
-        )
+        self.blur = nn.Sequential(nn.ReflectionPad2d(radius), self.blur_h, self.blur_v)
 
         self.pil_to_tensor = transforms.ToTensor()
         self.tensor_to_pil = transforms.ToPILImage()
