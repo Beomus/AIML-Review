@@ -11,7 +11,7 @@ from torchvision.datasets import ImageFolder
 
 from evaluation import compute_embedding, compute_knn
 from utils import DataAugmentation, Loss, MultiCropWrapper, clip_gradients
-from vit import VisionTransformer, MlpHead, DINOHead
+from vit import VisionTransformer, MlpHead, DINOHead, vit_tiny
 
 
 def main():
@@ -40,7 +40,7 @@ def main():
     args = parser.parse_args()
     print(vars(args))
     # Parameters
-    dim = 384
+    dim = 192
     path_dataset_train = pathlib.Path("data/imagenette2-320/train")
     path_dataset_val = pathlib.Path("data/imagenette2-320/val")
     path_labels = pathlib.Path("data/imagenette_labels.json")
@@ -110,8 +110,8 @@ def main():
     #######################
     # Models initialization
     #######################
-    student_vit = VisionTransformer()
-    teacher_vit = VisionTransformer()
+    student_vit = vit_tiny()
+    teacher_vit = vit_tiny()
 
     student = MultiCropWrapper(
         student_vit,

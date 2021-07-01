@@ -385,7 +385,7 @@ class MlpHead(nn.Module):
         norm_last_layer: bool = False,
     ):
         super().__init__()
-
+        self.in_dim = in_dim
         if n_layers == 1:
             self.mlp = nn.Linear(in_dim, bottleneck_dim)
         else:
