@@ -5,20 +5,20 @@ import torchvision
 from torch.utils.data.dataloader import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
-from .utils import _create_training_folder
+from utils import _create_training_folder
 
 
 class BYOLTrainer:
     def __init__(
-        self, online_network, target_network, predictor, optimizer, device, *params
+        self, online_network, target_network, predictor, optimizer, device, **params
     ):
         self.online_network = online_network
         self.target_network = target_network
         self.optimizer = optimizer
         self.device = device
         self.predictor = predictor
-        self.max_epochs = params["max_epoch"]
-        self.writer = SummaryWriter
+        self.max_epochs = params["max_epochs"]
+        self.writer = SummaryWriter("logs")
         self.m = params["m"]
         self.batch_size = params["batch_size"]
         self.num_workers = params["num_workers"]

@@ -1,4 +1,3 @@
-from itertools import Predicate
 import os
 import torch
 from torch.utils import data
@@ -6,7 +5,7 @@ from torchvision import datasets
 import yaml
 
 from transforms import MultiViewDataInjector, get_simclr_data_transforms
-from model.model import MlpHead, ResNet
+from model import MlpHead, ResNet
 from trainer import BYOLTrainer
 
 print(torch.__version__)
@@ -57,7 +56,7 @@ def main():
     target_network = ResNet(**config["network"]).to(device)
     optimizer = torch.optim.SGD(
         list(online_network.parameters()) + list(predictor.parameters()),
-        **config["optimizer"]["paramss"],
+        **config["optimizer"]["params"],
     )
 
     trainer = BYOLTrainer(

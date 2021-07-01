@@ -4,14 +4,14 @@ from torchvision import models
 
 
 class MlpHead(nn.Module):
-    def __init__(self, in_channels, hidden_size, projection_size):
+    def __init__(self, in_channels, mlp_hidden_size, projection_size):
         super().__init__()
 
         self.head = nn.Sequential(
-            nn.Linear(in_channels, hidden_size),
-            nn.BatchNorm1d(hidden_size),
+            nn.Linear(in_channels, mlp_hidden_size),
+            nn.BatchNorm1d(mlp_hidden_size),
             nn.ReLU(inplace=True),
-            nn.Linear(hidden_size, projection_size),
+            nn.Linear(mlp_hidden_size, projection_size),
         )
 
     def forward(self, x):
@@ -26,7 +26,7 @@ class ResNet(nn.Module):
         elif kwargs["name"] == "resnet50":
             resnet = models.resnet50(pretrained=False)
 
-        self.encoder = nn.Sequential(*list(resnet.children()[:-1]))
+        self.encoder = nn.Sequential(*list(resnet.children())[:-1])
         self.projection = MlpHead(
             in_channels=resnet.fc.in_features, **kwargs["projection_head"]
         )
