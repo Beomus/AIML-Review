@@ -227,11 +227,10 @@ class Loss(nn.Module):
         loss: torch.Tensor
             Scalar representing the average loss.
         """
-
         student_temp = [s / self.student_temp for s in student_output]
         teacher_temp = [(t - self.center) / self.teacher_temp for t in teacher_output]
 
-        student_sm = [F.softmax(s, dim=-1) for s in student_temp]
+        student_sm = [F.log_softmax(s, dim=-1) for s in student_temp]
         teacher_sm = [F.softmax(t, dim=-1).detach() for t in teacher_temp]
 
         total_loss = 0
@@ -242,8 +241,8 @@ class Loss(nn.Module):
                 if t_ix == s_ix:
                     continue
 
-                loss = torch.sum(-t * s, dim=-1)  # (n_samples, )
-                total_loss += loss.mean()
+                loss = torch.sum(-t * s, dim=-1)  # (n_samples,)
+                total_loss += loss.mean()  # scalar
                 n_loss_terms += 1
 
         total_loss /= n_loss_terms
@@ -257,16 +256,15 @@ class Loss(nn.Module):
         Update center used for teacher output.
 
         Compute the exponential moving average.
-
         Parameters
         ----------
         teacher_output : tuple
             Tuple of tensors of shape `(n_samples, out_dim)` where each tensor
             represent a different crop.
         """
-        batch_center = torch.cat(teacher_output).mean(dim=0, keepdim=True)
-        # (1, out_dim)
-
+        batch_center = torch.cat(teacher_output).mean(
+            dim=0, keepdim=True
+        )  # (1, out_dim)
         self.center = self.center * self.center_momentum + batch_center * (
             1 - self.center_momentum
         )

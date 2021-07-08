@@ -51,6 +51,7 @@ def main():
     device = torch.device(args.device)
     if device == "cuda":
         torch.cuda.empty_cache()
+    print(f"[INFO]: Current device: {device}")
     n_workers = 4
 
     ##################
@@ -102,6 +103,7 @@ def main():
         sampler=SubsetRandomSampler(list(range(0, len(dataset_val_plain), 50))),
         num_workers=n_workers,
     )
+    print(f"[INFO] Data loaded")
 
     #########
     # Logging
@@ -113,13 +115,13 @@ def main():
     run["config/parameters"] = json.dumps(vars(args))
     writer = SummaryWriter(logging_path)
     writer.add_text("arguments", json.dumps(vars(args)))
+    print(f"[INFO] Logging started")
 
     #######################
     # Models initialization
     #######################
     student_vit = vit_tiny()
     teacher_vit = vit_tiny()
-    run["config/model"] = type(student_vit).__name__
 
     student = MultiCropWrapper(
         student_vit,
@@ -133,6 +135,8 @@ def main():
     for p in teacher.parameters():
         p.requires_grad = False
 
+    print(f"[INFO]: Model initialized")
+
     ######
     # Loss
     ######
@@ -145,6 +149,12 @@ def main():
     optimizer = torch.optim.Adam(
         student.parameters(), lr=lr, weight_decay=args.weight_decay
     )
+
+    model_name = f"{type(student).__name__}"
+    with open(f"./{model_name}_arch.txt", "w") as f:
+        f.write(str(student))
+    run[f"config/model/{model_name}_arch"].upload(f"./{model_name}_arch.txt")
+    pathlib.Path.unlink(f"./{model_name}_arch.txt")
     run["config/optimizer"] = type(optimizer).__name__
 
     ###############
@@ -153,6 +163,7 @@ def main():
     n_batches = len(dataset_train_aug) // args.batch_size
     n_steps, best_acc = 0, 0
 
+    print(f"[INFO]: Training started")
     for epoch in range(args.n_epochs):
         for i, (images, _) in tqdm.tqdm(
             enumerate(train_dataloader_aug), total=n_batches
@@ -211,6 +222,8 @@ def main():
             run["metrics/loss"].log(loss)
 
             n_steps += 1
+
+    print(f"[INFO]: Training ended")
     run.stop()
 
 
