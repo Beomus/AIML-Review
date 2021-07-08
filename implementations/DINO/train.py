@@ -16,7 +16,6 @@ from utils import DataAugmentation, Loss, MultiCropWrapper, clip_gradients
 from vit import VisionTransformer, MlpHead, DINOHead, vit_tiny
 
 
-
 def main():
     parser = argparse.ArgumentParser(
         "DINO training CLI",
@@ -108,10 +107,10 @@ def main():
     # Logging
     #########
     run = neptune.init(
-        project='beomus/dino-test',
-        api_token='eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiIxYmVjMzgzMy1mYzJmLTRhMTMtOGQ3OS1jNzk5ODc1OGZhMDYifQ=='
+        project="beomus/dino-test",
+        api_token="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiIxYmVjMzgzMy1mYzJmLTRhMTMtOGQ3OS1jNzk5ODc1OGZhMDYifQ==",
     )
-    run['config/parameters'] = json.dumps(vars(args))
+    run["config/parameters"] = json.dumps(vars(args))
     writer = SummaryWriter(logging_path)
     writer.add_text("arguments", json.dumps(vars(args)))
 
@@ -178,11 +177,11 @@ def main():
                     student.backbone, train_dataloader_plain, val_dataloader_plain
                 )
                 writer.add_scalar("knn-accuracy", current_acc, n_steps)
-                run['metrics/acc'].log(current_acc)
+                run["metrics/acc"].log(current_acc)
                 if current_acc > best_acc:
                     model_path = str(logging_path / "model_best.pth")
                     torch.save(student, model_path)
-                    run['model_checkpoints/my_model'].upload(model_path)
+                    run["model_checkpoints/my_model"].upload(model_path)
                     best_acc = current_acc
 
                 student.train()
@@ -209,7 +208,7 @@ def main():
                     )
 
             writer.add_scalar("train_loss", loss, n_steps)
-            run['metrics/loss'].log(loss)
+            run["metrics/loss"].log(loss)
 
             n_steps += 1
     run.stop()
