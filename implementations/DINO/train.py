@@ -2,6 +2,8 @@ import argparse
 import json
 import pathlib
 
+import neptune.new as neptune
+from neptune.new.types import File
 import torch
 import torchvision.transforms as transforms
 import tqdm
@@ -12,6 +14,7 @@ from torchvision.datasets import ImageFolder
 from evaluation import compute_embedding, compute_knn
 from utils import DataAugmentation, Loss, MultiCropWrapper, clip_gradients
 from vit import VisionTransformer, MlpHead, DINOHead, vit_tiny
+
 
 
 def main():
@@ -104,6 +107,11 @@ def main():
     #########
     # Logging
     #########
+    run = neptune.init(
+        project='beomus/dino-test',
+        api_token='eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiIxYmVjMzgzMy1mYzJmLTRhMTMtOGQ3OS1jNzk5ODc1OGZhMDYifQ=='
+    )
+    run['config/parameters'] = json.dumps(vars(args))
     writer = SummaryWriter(logging_path)
     writer.add_text("arguments", json.dumps(vars(args)))
 
@@ -112,6 +120,7 @@ def main():
     #######################
     student_vit = vit_tiny()
     teacher_vit = vit_tiny()
+    run["config/model"] = type(student_vit).__name__
 
     student = MultiCropWrapper(
         student_vit,
@@ -137,13 +146,13 @@ def main():
     optimizer = torch.optim.Adam(
         student.parameters(), lr=lr, weight_decay=args.weight_decay
     )
+    run["config/optimizer"] = type(optimizer).__name__
 
     ###############
     # Training loop
     ###############
     n_batches = len(dataset_train_aug) // args.batch_size
-    best_acc = 0
-    n_steps = 0
+    n_steps, best_acc = 0, 0
 
     for epoch in range(args.n_epochs):
         for i, (images, _) in tqdm.tqdm(
@@ -169,8 +178,11 @@ def main():
                     student.backbone, train_dataloader_plain, val_dataloader_plain
                 )
                 writer.add_scalar("knn-accuracy", current_acc, n_steps)
+                run['metrics/acc'].log(current_acc)
                 if current_acc > best_acc:
-                    torch.save(student, logging_path / "best_model.pth")
+                    model_path = str(logging_path / "model_best.pth")
+                    torch.save(student, model_path)
+                    run['model_checkpoints/my_model'].upload(model_path)
                     best_acc = current_acc
 
                 student.train()
@@ -197,8 +209,10 @@ def main():
                     )
 
             writer.add_scalar("train_loss", loss, n_steps)
+            run['metrics/loss'].log(loss)
 
             n_steps += 1
+    run.stop()
 
 
 if __name__ == "__main__":
