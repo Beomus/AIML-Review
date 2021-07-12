@@ -14,7 +14,7 @@ model_names = sorted(
 
 parser = argparse.ArgumentParser(description="PyTorch SimCLR")
 parser.add_argument(
-    "-data", metavar="DIR", default="./datasets", help="path to dataset"
+    "-data", metavar="DIR", default="./data", help="path to dataset"
 )
 parser.add_argument(
     "-dataset-name", default="stl10", help="dataset name", choices=["stl10", "cifar10"]
@@ -30,10 +30,10 @@ parser.add_argument(
 parser.add_argument(
     "-j",
     "--workers",
-    default=12,
+    default=4,
     type=int,
     metavar="N",
-    help="number of data loading workers (default: 32)",
+    help="number of data loading workers (default: 4)",
 )
 parser.add_argument(
     "--epochs", default=200, type=int, metavar="N", help="number of total epochs to run"
@@ -100,14 +100,14 @@ parser.add_argument("--gpu-index", default=0, type=int, help="Gpu index.")
 
 def main():
     args = parser.parse_args()
-
-    assert args.n_views == 2, "n_views must be 2."
-
-    # check if gpu traning is enabled
-    if not args.disable_gpu and torch.cuda.is_available():
+    assert (
+        args.n_views == 2
+    ), "Only two view training is supported. Please use --n-views 2."
+    # check if gpu training is available
+    if not args.disable_cuda and torch.cuda.is_available():
         args.device = torch.device("cuda")
-        cudnn.benchmark = True
         cudnn.deterministic = True
+        cudnn.benchmark = True
     else:
         args.device = torch.device("cpu")
         args.gpu_index = -1
