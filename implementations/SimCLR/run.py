@@ -13,9 +13,7 @@ model_names = sorted(
 )
 
 parser = argparse.ArgumentParser(description="PyTorch SimCLR")
-parser.add_argument(
-    "-data", metavar="DIR", default="./data", help="path to dataset"
-)
+parser.add_argument("-data", metavar="DIR", default="./data", help="path to dataset")
 parser.add_argument(
     "-dataset-name", default="stl10", help="dataset name", choices=["stl10", "cifar10"]
 )
