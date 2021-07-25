@@ -177,6 +177,7 @@ def main():
     with open(f"./{model_name}_arch.txt", "w") as f:
         f.write(str(student))
     run[f"config/model/{model_name}_arch"].upload(f"./{model_name}_arch.txt")
+    # pathlib.Path.unlink(f"./{model_name}_arch.txt")
     run["config/optimizer"] = type(optimizer).__name__
 
     ###############

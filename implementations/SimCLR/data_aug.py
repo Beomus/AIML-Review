@@ -85,7 +85,7 @@ class ContrastiveLearningDataset:
         """
         Returns a set of data augmentation transformations
         """
-        color_jitter = transforms.ColorJitter(0.8 * s, 0.8 * s, 0.8 * s, 0.8 * s)
+        color_jitter = transforms.ColorJitter(0.8 * s, 0.8 * s, 0.8 * s, 0.2 * s)
         data_transforms = transforms.Compose(
             [
                 transforms.RandomResizedCrop(size),
