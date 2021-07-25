@@ -3,17 +3,18 @@ import json
 import pathlib
 
 import neptune.new as neptune
-from neptune.new.types import File
 import torch
 import torchvision.transforms as transforms
 import tqdm
 from torch.utils.data import DataLoader, SubsetRandomSampler
+import wandb
+
 from torch.utils.tensorboard import SummaryWriter
 from torchvision.datasets import ImageFolder
 
 from evaluation import compute_embedding, compute_knn
 from utils import DataAugmentation, Loss, MultiCropWrapper, clip_gradients
-from vit import VisionTransformer, MlpHead, DINOHead, vit_tiny
+from vit import MlpHead, DINOHead, vit_tiny, vit_small, vit_base
 
 
 def main():
@@ -21,16 +22,23 @@ def main():
         "DINO training CLI",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("-b", "--batch-size", type=int, default=32)
     parser.add_argument(
-        "-d", "--device", type=str, choices=("cpu", "cuda"), default="cpu"
+        "-m",
+        "--model",
+        type=str,
+        default="vit_tiny",
+        choices=["vit_tiny", "vit_small", "vit_base"],
     )
+    parser.add_argument("-b", "--batch-size", type=int, default=32)
+    parser.add_argument("-d", "--device", type=int, default=0)
+    parser.add_argument("--gpu", action="store_true")
     parser.add_argument("-l", "--logging-freq", type=int, default=200)
     parser.add_argument("--momentum-teacher", type=int, default=0.9995)
     parser.add_argument("-c", "--n-crops", type=int, default=4)
     parser.add_argument("-e", "--n-epochs", type=int, default=100)
     parser.add_argument("-o", "--out-dim", type=int, default=1024)
     parser.add_argument("-t", "--tensorboard-dir", type=str, default="logs")
+    parser.add_argument("--optimizer", type=str, default="AdamW")
     parser.add_argument("--clip-grad", type=float, default=2.0)
     parser.add_argument("--norm-last-layer", action="store_true")
     parser.add_argument("--batch-size-eval", type=int, default=64)
@@ -42,16 +50,21 @@ def main():
     args = parser.parse_args()
     print(vars(args))
     # Parameters
-    dim = 192
+    models = {
+        "vit_tiny": [vit_tiny, 192],
+        "vit_small": [vit_small, 384],
+        "vit_base": [vit_base, 768],
+    }
     path_dataset_train = pathlib.Path("data/imagenette2-320/train")
     path_dataset_val = pathlib.Path("data/imagenette2-320/val")
     path_labels = pathlib.Path("data/imagenette_labels.json")
 
     logging_path = pathlib.Path(args.tensorboard_dir)
-    device = torch.device(args.device)
-    if device == "cuda":
+    if args.gpu:
         torch.cuda.empty_cache()
-    print(f"[INFO]: Current device: {device}")
+        torch.cuda.set_device(args.device)
+        device = torch.cuda.current_device()
+        print(f"Current CUDA device: {device}")
     n_workers = 4
 
     ##################
@@ -113,15 +126,20 @@ def main():
         api_token="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiIxYmVjMzgzMy1mYzJmLTRhMTMtOGQ3OS1jNzk5ODc1OGZhMDYifQ==",
     )
     run["config/parameters"] = json.dumps(vars(args))
-    writer = SummaryWriter(logging_path)
+    writer = SummaryWriter()
     writer.add_text("arguments", json.dumps(vars(args)))
+
+    wandb.init(project="dino", entity="beomus")
+    wandb.config.update(args)
+
     print(f"[INFO] Logging started")
 
     #######################
     # Models initialization
     #######################
-    student_vit = vit_tiny()
-    teacher_vit = vit_tiny()
+    model_fn, dim = models[args.model]
+    student_vit = model_fn()
+    teacher_vit = model_fn()
 
     student = MultiCropWrapper(
         student_vit,
@@ -146,15 +164,19 @@ def main():
         student_temp=args.student_temp,
     ).to(device)
     lr = 0.0005 * args.batch_size / 256
-    optimizer = torch.optim.Adam(
+
+    optimizer = getattr(torch.optim, args.optimizer)(
         student.parameters(), lr=lr, weight_decay=args.weight_decay
     )
+
+    # optimizer = torch.optim.AdamW(
+    #     student.parameters(), lr=lr, weight_decay=args.weight_decay
+    # )
 
     model_name = f"{type(student).__name__}"
     with open(f"./{model_name}_arch.txt", "w") as f:
         f.write(str(student))
     run[f"config/model/{model_name}_arch"].upload(f"./{model_name}_arch.txt")
-    pathlib.Path.unlink(f"./{model_name}_arch.txt")
     run["config/optimizer"] = type(optimizer).__name__
 
     ###############
@@ -189,6 +211,7 @@ def main():
                 )
                 writer.add_scalar("knn-accuracy", current_acc, n_steps)
                 run["metrics/acc"].log(current_acc)
+                wandb.log({"accuracy": current_acc})
                 if current_acc > best_acc:
                     model_path = str(logging_path / "model_best.pth")
                     torch.save(student, model_path)
@@ -220,6 +243,7 @@ def main():
 
             writer.add_scalar("train_loss", loss, n_steps)
             run["metrics/loss"].log(loss)
+            wandb.log({"loss": loss})
 
             n_steps += 1
 
