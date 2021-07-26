@@ -38,7 +38,7 @@ def main():
     parser.add_argument("-c", "--n-crops", type=int, default=4)
     parser.add_argument("-e", "--n-epochs", type=int, default=100)
     parser.add_argument("-o", "--out-dim", type=int, default=1024)
-    parser.add_argument("-t", "--tensorboard-dir", type=str, default="logs")
+    parser.add_argument("-t", "--tensorboard-dir", type=str, default="")
     parser.add_argument("--optimizer", type=str, default="AdamW")
     parser.add_argument("--clip-grad", type=float, default=2.0)
     parser.add_argument("--norm-last-layer", action="store_true")
@@ -60,7 +60,6 @@ def main():
     path_dataset_val = pathlib.Path("data/imagenette2-320/val")
     path_labels = pathlib.Path("data/imagenette_labels.json")
 
-    logging_path = pathlib.Path(args.tensorboard_dir)
     if args.gpu:
         torch.cuda.empty_cache()
         torch.cuda.set_device(args.device)
@@ -128,8 +127,9 @@ def main():
     #########
     run = neptune.init(project="beomus/dino-test")
     run["config/parameters"] = json.dumps(vars(args))
-    writer = SummaryWriter()
+    writer = SummaryWriter(log_dir=args.tensorboard_dir)
     writer.add_text("arguments", json.dumps(vars(args)))
+    logging_path = pathlib.Path(writer.log_dir)
 
     wandb.init(project="dino", entity="beomus")
     wandb.config.update(args)
@@ -171,9 +171,11 @@ def main():
         "params": student.parameters(),
         "lr": lr,
         "weight_decay": args.weight_decay,
+        "amsgrad": True,
     }
     if args.optimizer == "SGD":
         optimizer_kwargs["momentum"] = 0.9
+        optimizer_kwargs.pop("amsgrad")
     optimizer = getattr(torch.optim, args.optimizer)(**optimizer_kwargs)
 
     # optimizer = torch.optim.AdamW(
@@ -181,10 +183,16 @@ def main():
     # )
 
     model_name = f"{type(student).__name__}"
-    with open(f"./{model_name}_arch.txt", "w") as f:
+    with open(f"{logging_path / model_name}_arch.txt", "w") as f:
         f.write(str(student))
-    run[f"config/model/{model_name}_arch"].upload(f"./{model_name}_arch.txt")
-    run["config/optimizer"] = type(optimizer).__name__
+    run[f"config/model/{model_name}_arch"].upload(
+        f"{logging_path / model_name}_arch.txt"
+    )
+
+    optimizer_name = f"{type(optimizer).__name__}"
+    with open(f"{logging_path / optimizer_name}.txt", "w") as f:
+        f.write(str(optimizer))
+    run[f"config/{optimizer_name}"].upload(f"{logging_path / optimizer_name}.txt")
 
     ###############
     # Training loop
