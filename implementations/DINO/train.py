@@ -7,6 +7,7 @@ import torch
 import torchvision.transforms as transforms
 import tqdm
 from torch.utils.data import DataLoader, SubsetRandomSampler
+
 import wandb
 
 from torch.utils.tensorboard import SummaryWriter
@@ -65,6 +66,10 @@ def main():
         torch.cuda.set_device(args.device)
         device = torch.cuda.current_device()
         print(f"Current CUDA device: {device}")
+    else:
+        device = torch.device("cpu")
+        print(f"Current device: {device}")
+
     n_workers = 4
 
     ##################
@@ -121,10 +126,7 @@ def main():
     #########
     # Logging
     #########
-    run = neptune.init(
-        project="beomus/dino-test",
-        api_token="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiIxYmVjMzgzMy1mYzJmLTRhMTMtOGQ3OS1jNzk5ODc1OGZhMDYifQ==",
-    )
+    run = neptune.init(project="beomus/dino-test")
     run["config/parameters"] = json.dumps(vars(args))
     writer = SummaryWriter()
     writer.add_text("arguments", json.dumps(vars(args)))
@@ -165,9 +167,14 @@ def main():
     ).to(device)
     lr = 0.0005 * args.batch_size / 256
 
-    optimizer = getattr(torch.optim, args.optimizer)(
-        student.parameters(), lr=lr, weight_decay=args.weight_decay
-    )
+    optimizer_kwargs = {
+        "params": student.parameters(),
+        "lr": lr,
+        "weight_decay": args.weight_decay,
+    }
+    if args.optimizer == "SGD":
+        optimizer_kwargs["momentum"] = 0.9
+    optimizer = getattr(torch.optim, args.optimizer)(**optimizer_kwargs)
 
     # optimizer = torch.optim.AdamW(
     #     student.parameters(), lr=lr, weight_decay=args.weight_decay
@@ -177,7 +184,6 @@ def main():
     with open(f"./{model_name}_arch.txt", "w") as f:
         f.write(str(student))
     run[f"config/model/{model_name}_arch"].upload(f"./{model_name}_arch.txt")
-    # pathlib.Path.unlink(f"./{model_name}_arch.txt")
     run["config/optimizer"] = type(optimizer).__name__
 
     ###############

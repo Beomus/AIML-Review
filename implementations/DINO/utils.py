@@ -37,6 +37,7 @@ class DataAugmentation:
         size=224,
     ):
         self.n_local_crops = n_local_crops
+        self.n_local_crops = n_local_crops
 
         def RandomGaussianBlur(p):
             return transforms.RandomApply(
@@ -73,7 +74,7 @@ class DataAugmentation:
                 transforms.RandomResizedCrop(
                     size=size,
                     scale=global_crops_scale,
-                    interpolation=transforms.InterpolationMode.BICUBIC,
+                    interpolation=transforms.functional.InterpolationMode.BICUBIC,
                 ),
                 flip_and_jitter,
                 RandomGaussianBlur(1.0),
@@ -86,7 +87,7 @@ class DataAugmentation:
                 transforms.RandomResizedCrop(
                     size=size,
                     scale=global_crops_scale,
-                    interpolation=transforms.InterpolationMode.BICUBIC,
+                    interpolation=transforms.functional.InterpolationMode.BICUBIC,
                 ),
                 flip_and_jitter,
                 RandomGaussianBlur(0.1),
@@ -100,7 +101,7 @@ class DataAugmentation:
                 transforms.RandomResizedCrop(
                     size=size,
                     scale=local_crops_scale,
-                    interpolation=transforms.InterpolationMode.BICUBIC,
+                    interpolation=transforms.functional.InterpolationMode.BICUBIC,
                 ),
                 flip_and_jitter,
                 RandomGaussianBlur(0.5),
@@ -108,7 +109,7 @@ class DataAugmentation:
             ]
         )
 
-    def __call__(self, img: Image) -> List[torch.Tensor]:
+    def __call__(self, img):
         """
         Apply transformations.
 
