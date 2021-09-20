@@ -1,11 +1,13 @@
-*/.ipynb_checkpoints
+.ipynb_checkpoints
 logs
-/.ipynb_checkpoints
 /random_search
-/.vscode
-/PyTorch/data
+.vscode
 __pycache__
 data
 checkpoints
 *.DS_Store
 .neptune
+wandb
+.h5
+.pth
+.csv
