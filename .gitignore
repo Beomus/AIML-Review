@@ -8,6 +8,6 @@ checkpoints
 *.DS_Store
 .neptune
 wandb
-.h5
-.pth
-.csv
+*.h5
+*.pth
+*.csv
