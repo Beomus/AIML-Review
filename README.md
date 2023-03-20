@@ -33,21 +33,23 @@ Frameworks:
 - [x] TensorFlow
 - [ ] FastAI
 
-## Usage
+## Installation
 
-`conda env create -f environment.yml`
+I purposely use Windows 11 🤮 because I'm too lazy to setup dual-boot on my
+laptop. Therefore, this instructions will be geared towards W11.
 
-`conda activate aiml`
+As of March 20th, 2023, [PyTorch](https://pytorch.org/get-started/locally/) supports [CUDA 11.8](https://developer.nvidia.com/cuda-11-8-0-download-archive?target_os=Windows&target_arch=x86_64&target_version=11&target_type=exe_network) so we will start
+from there.
 
-### *Note*
+```bash
+pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+```
 
-- TensorFlow installation is not included please check carefully on how to install TensorFlow that is compatible with your machine.
-- In case environment does not work because of OS differences, trying installing dependencies with pip:
+Other libs:
 
-`conda create --name aiml python=3.8`
-
-`conda activate aiml`
-
-`pip install -r requirements.txt`
-
-Please feel free to post any issues or PR as needed, I will try to review them as much as I can. Thanks!
+- ml-collections
+- sklearn
+- tensorboard
+- tqdm
+- einops
+- Pillow
