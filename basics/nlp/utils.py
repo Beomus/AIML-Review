@@ -12,6 +12,7 @@ from zipfile import ZipFile
 ALL_LETTERS = string.ascii_letters + " .,;'"
 N_LETTERS = len(ALL_LETTERS)
 
+
 # https://stackoverflow.com/a/518232/2809427
 def unicode_to_ascii(s):
     return "".join(
@@ -59,6 +60,7 @@ To make a word we join a bunch of those into a
 That extra 1 dimension is because PyTorch assumes
 everything is in batches - we’re just using a batch size of 1 here.
 """
+
 
 # Find letter index from all_letters, e.g. "a" = 0
 def letter_to_index(letter):

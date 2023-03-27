@@ -148,8 +148,8 @@ class EfficientNet(nn.Module):
 
     def _calculate_factors(self, version: str, alpha: float = 1.2, beta: float = 1.1):
         phi, resolution, drop_rate = phi_values[version]
-        depth_factor = alpha ** phi
-        width_factor = beta ** phi
+        depth_factor = alpha**phi
+        width_factor = beta**phi
         return width_factor, depth_factor, drop_rate
 
     def _create_features(

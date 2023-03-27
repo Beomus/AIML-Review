@@ -69,7 +69,6 @@ class SimCLR:
         return logits, labels
 
     def train(self, train_loader):
-
         scaler = GradScaler(enabled=self.args.fp16_precision)
 
         # save config file

@@ -81,7 +81,7 @@ def main():
     linear_outputs = []
     print("Start training for LinearAE")
     for epoch in range(epochs):
-        for (img, _) in data_loader:
+        for img, _ in data_loader:
             img = img.reshape(-1, 28 * 28)
             img = img.to(device)
             recon = linear_model(img)
@@ -100,7 +100,7 @@ def main():
     conv_outputs = []
     print("Start training for LinearAE")
     for epoch in range(epochs):
-        for (img, _) in data_loader:
+        for img, _ in data_loader:
             img = img.to(device)
             recon = conv_model(img)
             loss = criterion(recon, img)

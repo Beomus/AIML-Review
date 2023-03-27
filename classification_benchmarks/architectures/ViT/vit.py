@@ -53,7 +53,7 @@ class Attention(nn.Module):
     def __init__(self, dim, heads=8, dropout=0.1):
         super().__init__()
         self.heads = heads
-        self.scale = dim ** -0.5
+        self.scale = dim**-0.5
 
         self.to_qkv = nn.Linear(dim, dim * 3, bias=True)
         torch.nn.init.xavier_uniform_(self.to_qkv.weight)
@@ -145,7 +145,7 @@ class ViT(nn.Module):
             image_size % patch_size == 0
         ), f"Image dimensions ({image_size}) must be divisible by patch size ({patch_size})"
         num_patches = (image_size // patch_size) ** 2
-        patch_dim = in_channels * patch_size ** 2
+        patch_dim = in_channels * patch_size**2
         self.name = "ViT"
         self.patch_size = patch_size
         self.pos_embedding = nn.Parameter(torch.empty(1, (num_patches + 1), dim))
