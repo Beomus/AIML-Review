@@ -4,7 +4,7 @@
 ![unittest](https://github.com/Beomus/py-dsa/actions/workflows/unittest.yml/badge.svg)
 [![CircleCI](https://circleci.com/gh/Beomus/AIML-Review.svg?style=shield)](https://github.com/Beomus/AIML-Review/)
 
-Review notes can be found [here](https://docs.google.com/document/d/1ocJ-YzZ6IvvCjJWNqE98Q6tpFOXDguBGV7xBZhqHlss/edit?usp=sharing) (please feel free to leave any comments and suggestion and correction).
+Review notes can be found [here](./docs/notes.md) (please feel free to leave any comments and suggestion and correction).
 
 ---
 I will try to cover as much as I can. However, this repo is not meant to give you any advanced information or make you an expert at a particular subject.
